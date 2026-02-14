@@ -1,19 +1,24 @@
 #!/usr/bin/env sh
 
-# Gradle wrapper script
-# This script allows you to run Gradle tasks without needing to have Gradle installed on your system.
+# Gradle Wrapper script for UNIX-based systems
 
-if [ -z "$GRADLE_VERSION" ]; then
-  GRADLE_VERSION=7.2
+# Prevent running in an unsupported terminal
+if [ -z "$TERM_PROGRAM" ]; then
+  echo "Unsupported terminal. Please run this script in a supported terminal." >&2
+  exit 1
 fi
 
-# Check if Gradle is already installed
-if [ ! -d "gradle-"${GRADLE_VERSION} ]; then
-  echo "Gradle ${GRADLE_VERSION} not found, downloading..."
-  wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
-  unzip -q gradle-${GRADLE_VERSION}-bin.zip
-  rm gradle-${GRADLE_VERSION}-bin.zip
+# Configuration of script
+GRADLE_VERSION=6.8.3
+GRADLE_HOME=\"$HOME/.gradle/wrapper/dists/gradle-${GRADLE_VERSION}-bin/\"
+
+# Ensure that Gradle is installed
+if [ ! -d "$GRADLE_HOME" ]; then
+  echo "Gradle ${GRADLE_VERSION} not yet installed. Installing..."
+  curl -sSL https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -o gradle.zip
+  unzip gradle.zip -d "$HOME/.gradle/wrapper/dists/"
+  rm gradle.zip
 fi
 
-# Execute the Gradle task(s)
-./gradle-${GRADLE_VERSION}/bin/gradle $@
+# Execute Gradle
+exec "${GRADLE_HOME}/bin/gradle" "$@"
